@@ -55,3 +55,81 @@ make clean
 ```bash
 make distclean
 ```
+#### Você pode fazer do jeito que bem entender, se acha que não vale a pena refazer tudo do zero, tudo bem. Eu apenas recomendo isso.
+
+### 3. Instale os pacotes necessários
+
+#### Execute o *menuconfig*
+```bash
+make menuconfig
+```
+
+### 3.1 *Networking applications*
+#### Entre em *Target packages*  ---> *Networking applications*  ---> *dropbear* e deixe a seguinte configuração:
+![DROPBEAR](dropbear.png)
+#### Role mais para baixo e encontre o pacote *openssh* e deixe a seguinte configuração:
+![OPENSSH](openssh.png)
+
+#### Na mesma seção só que um pouco mais acima, também recomendo a instalação do *nmap* e *nping* 
+![NMAP](nmap.png)
+
+### 3.2 *System tools*
+
+#### Após tudo ter sido feito em *Networking applications*, acessem *Target packages*  ---> *System tools*  --->
+#### Dentro de *System tools* procurem pelo pacote *audit* e instalem ele. Quando eu estava testando o SSH da minha máquina para a placa a conexão resetava e apresentava um erro no terminal da placa, um erro do tipo:
+
+```bash
+[ 1366.978630] audit: type=1326 audit(1422551004.132:2): auid=4294967295 uid=22 gid=22 ses=4294967295 pid=2351 comm="sshd" exe="/usr/sbin/sshd" sig=31 syscall=102 compat=0 ip=0xb7669aa8 code=0x0
+```
+#### Pesquisando mais sobre ele, vi que existe esse pacote no *buildroot*, então fui lá e instalei: 
+![AUDIT](audit.png)
+
+#### Recomendo também a instalação do *htop* logo abaixo:
+![HTOP](htop.png)
+
+### *4. Recompile o *buildroot**
+#### Para maior rapidez, pesquise quantas *threads* seu processador aguenta (é possível ver essa dado com o comando ***htop***) e coloque esse número na opção *Number of jobs to run simultaneously* dentro de *Build options*, feche tudo e deixe apenas o terminal aberto, por que ele vai puxar muito do computador.
+
+### 4.1 Novas imagens e novo *rootfs*
+#### Copie as novas imagens para cartão SD, o novo *rootfs* eu recomendo que crie um nova pasta e o descompacte lá. **Lembre-se de criar um novo exports (/etc/exports) para essa nova pasta, além de reiniciar o serviço do nfs**. 
+### 4.2 Configurando o *sshd_config*
+#### Na sua máquina, vá até o novo *filesystem* e execute:
+```bash
+sudo su
+```
+#### Para entrar como superusuário e execute:
+```bash
+echo "PermitRootLogin yes" >> etc/ssh/sshd_config
+echo "PermitEmptyPasswords yes" >> etc/ssh/sshd_config
+```
+#### **CUIDADO PARA NÃO ALTERAR O /etc/ DA SUA MÁQUINA, ALTERE NO etc/ DO SISTEMA DE ARQUIVOS DA PLACA**
+#### Nessa caso, **NÃO** precisamos fazer:
+```bash
+etc/init.d/S50sshd restart
+```
+
+#### Eu fiz assim, mas acredito que possa ser feito de acordo com o PDF da prática, dentro da plaquinha sem problemas, é para surtir o mesmo efeito.
+### 5. Faça o *boot*
+#### Espera-se que o processo de boot tenha ocorrido bem. E que antes de ser colocado usuário em senha a mensagem: **Starting dropbear sshd: OK** tenha sido impressa.
+### 5.1 Olhando os processos que a placa está executando
+#### Execute na placa:
+```bash
+htop
+```
+#### Caso não tenha instalado ele:
+```bash
+top
+```
+#### Procure pelos processos **/usr/sbin/dropbear -R** e **/usr/sbin/auditd**, eles devem está rodando.
+
+![HTOP2](htop2.png)
+
+#### Na teoria, o seu SSH está funcionando, apenas resta testá-lo.
+
+### 6. Testando o seu SSH
+
+#### Na sua máquina, abra um terminal e execute:
+```bash
+ssh root@{ip_da_placa}
+```
+#### E seja feliz (ou não rsrs).
