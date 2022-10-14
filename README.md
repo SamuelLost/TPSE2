@@ -103,7 +103,7 @@ echo "PermitRootLogin yes" >> etc/ssh/sshd_config
 echo "PermitEmptyPasswords yes" >> etc/ssh/sshd_config
 ```
 #### **CUIDADO PARA NÃO ALTERAR O /etc/ DA SUA MÁQUINA, ALTERE NO etc/ DO SISTEMA DE ARQUIVOS DA PLACA**
-#### Nessa caso, **NÃO** precisamos fazer:
+#### Nesse caso, **NÃO** precisamos fazer:
 ```bash
 etc/init.d/S50sshd restart
 ```
