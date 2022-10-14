@@ -88,7 +88,7 @@ make menuconfig
 ![HTOP](htop.png)
 
 ### *4. Recompile o *buildroot**
-#### Para maior rapidez, pesquise quantas *threads* seu processador aguenta (é possível ver essa dado com o comando ***htop***) e coloque esse número na opção *Number of jobs to run simultaneously* dentro de *Build options*, feche tudo e deixe apenas o terminal aberto, por que ele vai puxar muito do computador.
+#### Para maior rapidez, pesquise quantas *threads* seu processador aguenta (é possível ver esse dado com o comando ***htop***) e coloque esse número na opção *Number of jobs to run simultaneously* dentro de *Build options*, feche tudo e deixe apenas o terminal aberto, pois ele vai puxar muito do computador.
 
 ### 4.1 Novas imagens e novo *rootfs*
 #### Copie as novas imagens para cartão SD, o novo *rootfs* eu recomendo que crie um nova pasta e o descompacte lá. **Lembre-se de criar um novo exports (/etc/exports) para essa nova pasta, além de reiniciar o serviço do nfs**. 
