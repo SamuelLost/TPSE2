@@ -1,0 +1,95 @@
+#ARQUIVO DO HELDER
+
+set app "set ipaddr 10.4.2.2; set serverip 10.4.2.1;tftp 0x80000000 download.bin;echo *** Booting to BareMetal***;go 0x80000000"
+
+set app "mw 0x44e35048 0xaaaa; sleep 1; mw 0x44e35048 0x5555;set ipaddr 10.4.1.2; set serverip 10.4.1.1;tftp 0x80000000 appGpio.bin;echo *** Booting to BareMetal ***;go 0x80000000"
+
+setenv ipaddr 10.4.1.2; setenv serverip 10.4.1.1;setenv ethact usb_ether; setenv usbnet_devaddr f8:dc:7a:00:00:02; setenv usbnet_hostaddr f8:dc:7a:00:00:01
+
+set app "mw 0x44e35048 0xaaaa; sleep 1; mw 0x44e35048 0x5555;setenv ipaddr 10.4.1.2; setenv serverip 10.4.1.1;setenv ethact usb_ether; setenv usbnet_devaddr f8:dc:7a:00:00:02; setenv usbnet_hostaddr f8:dc:7a:00:00:01;tftp 0x80000000 appGpio.bin;echo *** Booting to BareMetal ***;go 0x80000000"
+
+https://github.com/mihaiolteanu/xinu-beaglebone-howto
+
+http://www2.cs.sfu.ca/CourseCentral/433/bfraser/assignments.html
+
+md 0x44e35030 8
+
+mw 0x44e35048 0xaaaa; sleep 1; mw 0x44e35048 0x5555
+
+
+https://e2e.ti.com/support/embedded/starterware/f/790/t/302178
+https://e2e.ti.com/support/embedded/starterware/f/790/t/172022
+
+
+
+https://www.circuito.io/
+https://www.hackster.io/
+
+set app "set ipaddr 10.4.2.2; set serverip 10.4.2.1;tftp 0x80000000 download.bin;go 0x80000000"
+
+#NOVO TPSE2
+mw 0x44e35048 0xaaaa; sleep 1; mw 0x44e35048 0x5555;
+set autoload no
+set serverip 10.4.1.1 //meu pc - seta nas config com masknet 255.255.255.0
+tftp 0x80800000 u-boot.bin
+go 0x80800000
+
+set app "mw 0x44e35048 0xaaaa; sleep 1; mw 0x44e35048 0x5555; set autoload no; set ipaddr 10.4.1.2; set serverip 10.4.1.1; tftp 0x80800000 u-boot.bin; go 0x80800000"
+mw 0x44e35048 0xaaaa; sleep 1; mw 0x44e35048 0x5555; setenv autoload no; dhcp; setenv ipaddr 10.4.1.2; setenv serverip 10.4.1.1; tftp 0x80000000 u-boot.bin; echo ***Booting to BareMetal ***; go 0x80000000;
+
+set ipaddr 10.4.1.2; set serverip 10.4.1.1; setenv bootargs "console=ttyS0,115200,n8 root=/dev/mmcblk0p1 rw rootfstype=ext4 rootwait"; tftpboot 0x80F80000 am335x-boneblack.dtb; tftpboot 0x80007FC0 uImage; bootm 0x80007FC0 - 0x80F80000
+
+set ipaddr 10.4.1.2; set serverip 10.4.1.1; setenv bootargs "console=ttyS0,115200,n8 ip=10.4.1.2 root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait"; tftpboot 0x80F80000 am335x-boneblack.dtb; tftpboot 0x80007FC0 uImage; bootm 0x80007FC0 - 0x80F80000 #Carregando o linux do tftpboot com filesystem
+
+setenv ipaddr 10.4.1.2; setenv serverip 10.4.1.1; setenv bootargs "console=ttyO0,115200n8 root=/dev/nfs rw ip=10.4.1.2:::::usb0 g_ether.dev_addr=f8:dc:7a:00:00:02 g_ether.host_addr=f8:dc:7a:00:00:01 nfsroot=10.4.1.1:/home/samuel/8Semestre/TPSE2/lab05/buildrootfs,nfsvers=3,tcp rootwait"; tftpboot 0x82000000 am335x-boneblack.dtb; tftpboot 0x81000000 uImage; fdt addr 0x82000000; tftpboot 0x83000000 BB-PWM1-00A0.dtbo; fdt apply 0x83000000; bootm 0x81000000 - 0x82000000
+
+fatload mmc 0:1 0x80007FC0 uImage; fatload mmc 0:1 0x80F80000 am335x-boneblack.dtb; setenv bootargs "console=ttyS0,115200,n8 ip=10.4.1.2 root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait"; bootm 0x80007FC0 - 0x80F80000 #Com ip e linux do cartão sd e cabo de rede
+
+fatload mmc 0:1 0x80007FC0 uImage; fatload mmc 0:1 0x80F80000 am335x-boneblack.dtb; setenv bootargs "console=ttyS0,115200,n8 root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait"; bootm 0x80007FC0 - 0x80F80000 
+#Sem ip, puxando linux do cartão sd e sem cabo de rede
+
+
+set ipaddr 10.4.1.2; set serverip 10.4.1.1; setenv bootargs "console=ttyS0,115200,n8"; tftpboot 0x80F80000 am335x-boneblack.dtb; tftpboot 0x80007FC0 uImage; bootm 0x80007FC0 - 0x80F80000
+
+
+setenv argsnfs "root=/dev/nfs rw nfsroot=${serverip}:/home/samuel/8Semestre/TPSE2/lab04/busyrootfs,nfsvers=3,tcp rootwait"
+setenv consolecfg "console=ttyS0,115200,n8"
+setenv ipcfg "ip=10.4.1.1"
+setenv bootargs "${consolecfg} ${ipcfg} ${argsnfs}"
+setenv bootcmd "fatload mmc 0:1 0x80007FC0 uImage; fatload mmc 0:1 0x80F80000 am335x-boneblack.dtb; bootm 0x80007FC0 - 0x80F80000"
+
+setenv bootargs "console=ttyO0,115200n8 root=/dev/nfs rw ip=10.4.1.2:::::usb0 g_ether.dev_addr=f8:dc:7a:00:00:02 g_ether.host_addr=f8:dc:7a:00:00:01 nfsroot=10.4.1.1:/home/samuel/8Semestre/TPSE2/lab05/buildrootfs,nfsvers=3,tcp rootwait"
+
+#Links úteis TPSE2
+https://embedjournal.com/kernel-compilation-beaglebone-black/
+https://e-tinet.com/linux/6-comandos-localizar-arquivos-linux/#:~:text=Por%20exemplo%2C%20se%20voc%C3%AA%20quer,%2C%20digita%2Dse%20locate%20arquivo.
+https://elinux.org/Building_BBB_Kernel
+https://www.armhf.com/using-beaglebone-black-gpios/
+https://linuxlink.timesys.com/docs/static_ip
+https://www.kernel.org/doc/html/v4.14/admin-guide/kernel-parameters.html
+https://www.youtube.com/watch?v=8zsd_7pkrIw&ab_channel=EmbeddedCraft
+https://www.youtube.com/watch?v=swdll9ibpks&list=PLYFcceRpv98BFZORI1Tdo_kS0L0_CY2GQ&index=7&ab_channel=EmbeddedCraft
+https://cleitonbueno.com/shell-script-estrutura-condicional/
+https://beagleboard.org/blog/2022-06-06-using-the-u-boot-extension-board-manager-beaglebone-boards-example
+https://kilobaser.com/beaglebone-black-gpios/
+https://blog.actorsfit.com/a?ID=00500-758784ca-be71-452b-8f57-4b0661266435
+https://www.ics.com/blog/gpio-programming-using-sysfs-interface
+
+setenv bootcmd "setenv ipaddr 10.4.1.2; setenv serverip 10.4.1.1; tftpboot 0x80F80000 am335x-boneblack.dtb; tftpboot 0x80007FC0 uImage; bootm 0x80007FC0 - 0x80F80000"
+fatload mmc 0:1 0x80007FC0 uImage; fatload mmc 0:1 0x80F80000 am335x-boneblack.dtb; bootm 0x80007FC0 - 0x80F80000
+
+tftpboot 0x81000000 uImage;
+tftpboot 0x82000000 am335x-boneblack.dtb;
+fdt addr 0x82000000;
+tftpboot 0x83000000 BB-PWM1-00A0.dtbo;
+fdt resize 8192;
+fdt apply 0x83000000;
+bootm 0x81000000 - 0x82000000;
+setenv bootcmd "tftpboot 0x81000000 uImage; tftpboot 0x82000000 am335x-boneblack.dtb; fdt addr 0x82000000; tftpboot 0x83000000 BB-PWM1-00A0.dtbo; fdt resize 8192; fdt apply 0x83000000; bootm 0x81000000 - 0x82000000;"
+
+fatload mmc 0:1 0x81000000 uImage;
+fatload mmc 0:1 0x82000000 am335x-boneblack.dtb;
+fdt addr 0x82000000;
+fatload mmc 0:1 0x83000000 BB-PWM1-00A0.dtbo;
+fdt resize 8192;
+fdt apply 0x83000000;
